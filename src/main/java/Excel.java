@@ -2,10 +2,12 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,5 +44,36 @@ public class Excel {
         }
 
         return data;
+    }
+
+    public void write(List<Object[]> value) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("result");
+
+
+        int rowCount = 0;
+
+        for (Object[] object : value) {
+            Row row = sheet.createRow(++rowCount);
+
+            int columnCount = 0;
+
+            for (Object field : object) {
+                Cell cell = row.createCell(++columnCount);
+                if (field instanceof String) {
+                    cell.setCellValue((String) field);
+                } else if (field instanceof Integer) {
+                    cell.setCellValue((Integer) field);
+                } else if (field instanceof Boolean) {
+                    cell.setCellValue((Boolean) field);
+                }
+            }
+
+        }
+
+
+        try (FileOutputStream outputStream = new FileOutputStream("src/main/report.xlsx")) {
+            workbook.write(outputStream);
+        }
     }
 }
